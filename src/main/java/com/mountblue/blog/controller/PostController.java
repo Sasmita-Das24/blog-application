@@ -66,8 +66,6 @@ public class PostController {
     @GetMapping("/posts")
     public String getPosts(Model model){
         List<Post> posts = postService.findAll();
-
-        // Define the formatter for the date
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         // Iterate through each post and format the publishedAt date
@@ -89,7 +87,6 @@ public class PostController {
                     firstPost.getPublishedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : "";
             model.addAttribute("formattedDate", formattedDate);
         }
-
         return "posts";
     }
 
