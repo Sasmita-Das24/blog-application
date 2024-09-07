@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Posts</title>
+    <style>
+        .post-container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+        .post-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .post-content {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Posts</h1>
+    <div th:each="post : ${posts}" class="post-container">
+        <h2>
+            <a th:href="@{'/posts/' + ${post.id}}" th:text="${post.title}" class="post-title"></a>
+        </h2>
+        <p th:text="${post.publishedAt}" class="post-content"></p>
+        <p th:text="${post.excerpt}" class="post-content"></p>
+        <p th:text="${post.content}" class="post-content"></p>
+        <p th:text="${post.author}" class="post-content"></p>
+    </div>
+</body>
+</html>
