@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name="posts")
@@ -15,6 +16,7 @@ public class Post {
     private int id;
     private  String title;
     private  String excerpt;
+    @Column(columnDefinition = "TEXT")
     private  String content;
     private  String author;
     @Column(name="published_at")
@@ -29,11 +31,13 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments;
 
+    private String formattedDate;
+
     @ManyToMany
     @JoinTable(name = "post_tags",
             joinColumns =  @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private List<Tag> tags;
+    private List<Tag> tags = new ArrayList<>();
 
     @PrePersist
     public void prePersist(){
@@ -44,6 +48,7 @@ public class Post {
     @PreUpdate
     public void preUpdate(){
         updatedAt = LocalDateTime.now();
+        publishedAt = LocalDateTime.now();
     }
 
     public String getTitle() {
@@ -134,6 +139,14 @@ public class Post {
         this.tags = tags;
     }
 
+    public String getFormattedDate() {
+        return formattedDate;
+    }
+
+    public void setFormattedDate(String formattedDate) {
+        this.formattedDate = formattedDate;
+    }
+
     public void setTagsFromString(String tagsString) {
         String[] tagNames = tagsString.split("\\s*,\\s*");
         List<Tag> tags = new ArrayList<>();
@@ -158,7 +171,7 @@ public class Post {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", comments=" + comments +
-                ", tags=" + tags +
+                ", tags=" + tags.stream().map(Tag::getName).collect(Collectors.joining(", ")) +
                 '}';
     }
 }

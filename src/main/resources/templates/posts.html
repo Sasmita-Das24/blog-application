@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>All Posts</title>
+    <title>My blog application</title>
     <style>
         .post-container {
             border: 1px solid #ccc;
@@ -27,15 +27,81 @@
     </style>
 </head>
 <body>
+    <h1>My blog application</h1>
+    <div class="centered-link">
+        <a th:href="@{/newpost}">Create New Post</a><br>
+    </div>
+   <!-- <form action="#" method="get">
+        &lt;!&ndash; Filter by Tags &ndash;&gt;
+        <div class="filter-form">
+            <label for="tags">Filter by Tags:</label>
+            <div id="tags" class="tags-container">
+                <div th:each="tag : ${allTags}">
+                    <input type="checkbox" name="selectedTags" th:value="${tag.id}" th:text="${tag.name}"
+                           th:checked="${selectedTags != null && selectedTags.contains(tag.id)}">
+                    <label th:text="${tag.name}"></label><br>
+                </div>
+            </div>
+        </div>
+
+        &lt;!&ndash; Filter by Author &ndash;&gt;
+        <div class="filter-form">
+            <label>Filter by Author:</label>
+            <div>
+                <div th:each="author : ${allAuthors}">
+                    <input type="checkbox" name="selectedAuthors" th:value="${author.name}" th:text="${author.name}"
+                           th:checked="${selectedAuthors != null && selectedAuthors.contains(author.name)}">
+                    <label th:text="${author.name}"></label><br>
+                </div>
+            </div>
+        </div>
+
+        &lt;!&ndash; Filter by Date Range &ndash;&gt;
+        <div class="filter-form">
+            <label for="startDate">Start Date:</label>
+            <input type="date" name="startDate" th:value="${startDate}" id="startDate">
+        </div>
+
+        <div class="filter-form">
+            <label for="endDate">End Date:</label>
+            <input type="date" name="endDate" th:value="${endDate}" id="endDate">
+        </div>
+
+        <div class="filter-form">
+            <label for="sortOrder">Sort by Published Date:</label>
+            <select id="sortOrder" name="sortOrder">
+                <option value="desc">Newest First</option>
+                <option value="asc">Oldest First</option>
+            </select>
+        </div>
+
+        &lt;!&ndash; Submit button &ndash;&gt;
+        <div class="filter-form">
+            <button type="submit">Apply Filter</button>
+        </div>
+    </form>-->
+    <form action="/posts/sort" method="get">
+        <label for="sortOrder">Sort by Published Date:</label>
+        <select name="sortOrder" id="sortOrder">
+            <option value="desc" th:selected="${sortOrder == 'desc'}">Newest First</option>
+            <option value="asc" th:selected="${sortOrder == 'asc'}">Oldest First</option>
+        </select>
+        <button type="submit">Sort</button>
+    </form>
+
+
+
     <h1>All Posts</h1>
     <div th:each="post : ${posts}" class="post-container">
         <h2>
             <a th:href="@{'/posts/' + ${post.id}}" th:text="${post.title}" class="post-title"></a>
         </h2>
-        <p th:text="${post.publishedAt}" class="post-content"></p>
+        <p th:text="${post.formattedDate}"></p>
+        <!--<p th:text="${post.publishedAt}" class="post-content"></p>-->
         <p th:text="${post.excerpt}" class="post-content"></p>
         <p th:text="${post.content}" class="post-content"></p>
         <p th:text="${post.author}" class="post-content"></p>
+        <p th:text="${post.tags}" class="post-content"></p>
     </div>
 </body>
 </html>
