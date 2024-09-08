@@ -7,6 +7,9 @@ import com.mountblue.blog.repository.PostRepository;
 import com.mountblue.blog.service.PostService;
 import com.mountblue.blog.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,10 +30,13 @@ public class PostController {
     private final PostService postService;
     private final TagService tagService;
 
+    private final PostRepository postRepository;
+
     @Autowired
-    public PostController(PostService postService, TagService tagService) {
+    public PostController(PostService postService, TagService tagService, PostRepository postRepository) {
         this.postService = postService;
         this.tagService = tagService;
+        this.postRepository = postRepository;
     }
 
     @GetMapping("/home")
@@ -95,6 +101,15 @@ public class PostController {
         List<Post> posts = postService.findAllSortedByPublishedAt(sortOrder);
         model.addAttribute("posts", posts);
         model.addAttribute("sortOrder", sortOrder);
+        return "posts";
+    }
+
+    @GetMapping("/search")
+    public String searchPosts(@RequestParam("query") String query, @PageableDefault(size = 10) Pageable pageable,
+                                  Model model) {
+        Page<Post> posts = postService.searchPosts(query, pageable);
+        model.addAttribute("posts", posts);
+        model.addAttribute("query", query); // to preserve the search query in the view
         return "posts";
     }
 

@@ -1,6 +1,8 @@
 package com.mountblue.blog.service;
 
 import com.mountblue.blog.entity.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,4 +25,10 @@ public interface PostService {
     List<String> findAllAuthors();
 
     List<Post> findAllSortedByPublishedAt(String sortOrder);
+
+   /* List<Post> searchPosts(String query);*/
+
+    Page<Post> searchPosts(String query, Pageable pageable);
+
+
 }

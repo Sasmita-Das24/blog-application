@@ -5,10 +5,10 @@ import com.mountblue.blog.entity.Tag;
 import com.mountblue.blog.repository.PostRepository;
 import com.mountblue.blog.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -86,5 +86,16 @@ public class PostServiceImpl implements PostService{
 
         posts.sort(comparator);
         return posts;
+    }
+
+    /*@Override
+    public List<Post> searchPosts(String query) {
+        return postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrAuthor_NameContainingIgnoreCaseOrTags_NameContainingIgnoreCase(
+                query, query, query, query);
+    }*/
+
+    @Override
+    public Page<Post> searchPosts(String query, Pageable pageable) {
+        return postRepository.search(query, pageable);
     }
 }
