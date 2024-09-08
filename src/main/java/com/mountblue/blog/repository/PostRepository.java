@@ -34,12 +34,6 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
             @Param("endDate") LocalDateTime endDate
     );
 
-   /* List<Post> findByTitleContainingOrContentContainingOrAuthor_NameContainingOrTags_NameContaining(
-            String title, String content, String author, String tags);
-
-
-    List<Post> findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrAuthor_NameContainingIgnoreCaseOrTags_NameContainingIgnoreCase(String title, String content, String authorName, String tagName);*/
-
     @Query("SELECT DISTINCT p FROM Post p " +
             "LEFT JOIN p.tags t " +
             "WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
@@ -47,4 +41,26 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
             "LOWER(p.author) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Post> search(@Param("search") String search, Pageable pageable);
+
+    @Query("SELECT p FROM Post p JOIN p.tags t WHERE p.author = :author AND p.publishedAt = :publishedAt AND t.name IN :tags")
+    List<Post> findPostsByAuthorAndPublishedAtAndTags(@Param("author") String author, @Param("publishedAt") LocalDateTime publishedAt, @Param("tags") List<String> tags);
+
+    @Query("SELECT p FROM Post p WHERE p.author = :author AND p.publishedAt = :publishedAt")
+    List<Post> findPostsByAuthorAndPublishedAt(@Param("author") String author, @Param("publishedAt") LocalDateTime publishedA);
+
+    @Query("SELECT p FROM Post p JOIN p.tags t WHERE p.author = :author AND t.name IN :tags")
+    List<Post> findPostsByAuthorAndTags(@Param("author") String author, @Param("tags") List<String> tags);
+
+    @Query("SELECT p FROM Post p JOIN p.tags t WHERE p.publishedAt = :publishedAt AND t.name IN :tags")
+    List<Post> findPostsByPublishedAtAndTags(@Param("publishedAt") LocalDateTime publishedAt, @Param("tags") List<String> tags);
+
+    @Query("SELECT p FROM Post p WHERE p.author = :author")
+    List<Post> findPostsByAuthor(@Param("author") String author);
+
+    @Query("SELECT p FROM Post p WHERE p.publishedAt = :publishedAt")
+    List<Post> findPostsByPublishedAt(@Param("publishedAt") LocalDateTime publishedAt);
+
+    @Query("SELECT p FROM Post p JOIN p.tags t WHERE t.name IN :tags")
+    List<Post> findPostsByTags(@Param("tags") List<String> tags);
+
 }

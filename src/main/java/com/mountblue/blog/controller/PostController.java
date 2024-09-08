@@ -8,7 +8,9 @@ import com.mountblue.blog.service.PostService;
 import com.mountblue.blog.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -70,8 +72,11 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public String getPosts(Model model){
+    public String getPosts( Model model){
+
         List<Post> posts = postService.findAll();
+        List<Tag> allTags = tagService.findAllTags();
+        List<String> allAuthors = postService.findAllAuthors();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         // Iterate through each post and format the publishedAt date
@@ -85,6 +90,9 @@ public class PostController {
 
         // Add the list of posts with formatted dates to the model
         model.addAttribute("posts", posts);
+        model.addAttribute("allTags",allTags);
+        model.addAttribute("allAuthors",allAuthors);
+
 
         // Optionally, format the date for the first post and add it separately
         if (!posts.isEmpty()) {
@@ -99,8 +107,10 @@ public class PostController {
     @GetMapping("/posts/sort")
     public String getPosts(@RequestParam(defaultValue = "desc") String sortOrder, Model model) {
         List<Post> posts = postService.findAllSortedByPublishedAt(sortOrder);
+
         model.addAttribute("posts", posts);
         model.addAttribute("sortOrder", sortOrder);
+
         return "posts";
     }
 
@@ -124,26 +134,34 @@ public class PostController {
     }
 
     @GetMapping("/posts/filter")
-    public String getFilteredPosts(@RequestParam(required = false) List<String> selectedAuthors,
-                                   @RequestParam(required = false) List<Long> selectedTags,
-                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate, Model model){
-        //List<String> tagList = (tags != null) ? Arrays.asList(tags.split(",")) : Collections.emptyList();
+    public String getFilteredPosts(
+            @RequestParam(required = false) String selectedAuthor,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(required = false) List<String> selectedTags,
+            Model model) {
+
+        // Fetch all tags and authors for the filter form
         List<Tag> allTags = tagService.findAllTags();
         List<String> allAuthors = postService.findAllAuthors();
 
+        // Get filtered posts based on selected filters
+        // Convert tags list to a format that can be used in the service method if needed
+        List<Post> filteredPosts = postService.filterPosts(selectedAuthor, startDate, selectedTags);
 
-        //List<Post> filteredPosts = postService.filterPosts(selectedAuthors,selectedTags, startDate,endDate);
-
+        // Add attributes to the model for rendering the view
         model.addAttribute("allTags", allTags);
         model.addAttribute("allAuthors", allAuthors);
-       // model.addAttribute("posts", filteredPosts);
-        model.addAttribute("selectedAuthors", selectedAuthors);
+        model.addAttribute("posts", filteredPosts);
+        model.addAttribute("selectedAuthor", selectedAuthor);
         model.addAttribute("selectedTags", selectedTags);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
+
         return "posts";
     }
+
+
 
     @GetMapping("/posts/delete/{id}")
     public String deletePost(@PathVariable int id){

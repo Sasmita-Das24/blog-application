@@ -4,9 +4,13 @@ import com.mountblue.blog.entity.Post;
 import com.mountblue.blog.entity.Tag;
 import com.mountblue.blog.repository.PostRepository;
 import com.mountblue.blog.repository.TagRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +22,9 @@ import java.util.List;
 public class PostServiceImpl implements PostService{
     private PostRepository postRepository;
     private final TagRepository tagRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     public PostServiceImpl(PostRepository postRepository,TagRepository tagRepository) {
         this.postRepository = postRepository;
@@ -55,21 +62,33 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public List<Post> filterPosts(String author, LocalDateTime publishedAt, List<String> tags) {
-        return null;
+        if (author != null && publishedAt != null && tags != null) {
+            // Filter by author, published date, and tags
+            return postRepository.findPostsByAuthorAndPublishedAtAndTags(author, publishedAt, tags);
+        } else if (author != null && publishedAt != null) {
+            // Filter by author and published date
+            return postRepository.findPostsByAuthorAndPublishedAt(author, publishedAt);
+        } else if (author != null && tags != null) {
+            // Filter by author and tags
+            return postRepository.findPostsByAuthorAndTags(author, tags);
+        } else if (publishedAt != null && tags != null) {
+            // Filter by published date and tags
+            return postRepository.findPostsByPublishedAtAndTags(publishedAt, tags);
+        } else if (author != null) {
+            // Filter by author only
+            return postRepository.findPostsByAuthor(author);
+        } else if (publishedAt != null) {
+            // Filter by published date only
+            return postRepository.findPostsByPublishedAt(publishedAt);
+        } else if (tags != null) {
+            // Filter by tags only
+            return postRepository.findPostsByTags(tags);
+        } else {
+            // No filters provided, return all posts
+            return postRepository.findAll();
+        }
     }
 
-    /*
-    @Override
-    public List<Post> filterPosts(List<String> authors, List<Long> tagIds, LocalDate startDate, LocalDate endDate) {
-        // Convert LocalDate to LocalDateTime for filtering
-        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
-        LocalDateTime endDateTime = (endDate != null) ? endDate.atTime(23, 59, 59) : null;
-
-        // Call the repository method with the filters
-        return postRepository.findPostsByFilters(authors, tagIds, startDateTime, endDateTime);
-    }
-
-     */
     @Override
     public List<String> findAllAuthors() {
         return postRepository.findDistinctAuthors();
@@ -88,14 +107,20 @@ public class PostServiceImpl implements PostService{
         return posts;
     }
 
-    /*@Override
-    public List<Post> searchPosts(String query) {
-        return postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrAuthor_NameContainingIgnoreCaseOrTags_NameContainingIgnoreCase(
-                query, query, query, query);
-    }*/
-
     @Override
     public Page<Post> searchPosts(String query, Pageable pageable) {
         return postRepository.search(query, pageable);
     }
+
+    @Override
+    public List<Post> getPostsByPage(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset / limit, limit);
+        Page<Post> postPage = postRepository.findAll(pageable);
+        return postPage.getContent();
+    }
+
+
+
+
+
 }
