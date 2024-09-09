@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Set;
 
@@ -57,14 +56,11 @@ public class CommentController {
         return "error";
     }
 
-
-
     @PostMapping("/edit/{id}")
     public String updateComment(@PathVariable("id") Integer id, @ModelAttribute("comment") Comment comment) {
         commentService.update(id, comment);
         return "redirect:/posts";
     }
-
 
     @PostMapping("/updateComment/{postId}/{commentId}")
     public String updateComment(@PathVariable("postId") int postId,@PathVariable("commentId") int commentId, Model model){

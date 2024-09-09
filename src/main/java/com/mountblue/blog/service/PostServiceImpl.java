@@ -119,7 +119,14 @@ public class PostServiceImpl implements PostService{
         return postPage.getContent();
     }
 
+    @Override
+    public Page<Post> findAllPaged(Pageable pageable) {
+        return postRepository.findAll(pageable);
+    }
 
+    public Page<Post> filterPosts(List<String> selectedAuthor, LocalDateTime startDate, LocalDateTime endDate, List<String> selectedTags, Pageable pageable) {
+        return postRepository.findFilteredPosts(selectedAuthor, selectedTags, startDate, endDate, pageable);
+    }
 
 
 

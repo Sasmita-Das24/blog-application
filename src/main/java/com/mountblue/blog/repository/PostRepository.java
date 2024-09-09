@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post,Integer> {
+public interface PostRepository extends JpaRepository<Post,Integer>  {
     Post findPostById(int id);
 
     List<Post> findByIsPublishedTrue(Sort sort);
@@ -62,5 +62,18 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
 
     @Query("SELECT p FROM Post p JOIN p.tags t WHERE t.name IN :tags")
     List<Post> findPostsByTags(@Param("tags") List<String> tags);
+
+    @Query("SELECT p FROM Post p " +
+            "LEFT JOIN p.tags t " +
+            "WHERE (:authors IS NULL OR p.author IN :authors) " +
+            "AND (:tagIds IS NULL OR t.name IN :tagIds) " +
+            "AND (:startDate IS NULL OR p.publishedAt >= :startDate) " +
+            "AND (:endDate IS NULL OR p.publishedAt <= :endDate)")
+    Page<Post> findFilteredPosts(
+            @Param("authors") List<String> authors,
+            @Param("tagIds") List<String> tagIds,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            Pageable pageable);
 
 }

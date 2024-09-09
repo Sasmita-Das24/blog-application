@@ -10,4 +10,6 @@ public interface TagService {
     List<Tag> findTagsByIds(List<Integer> tagIds);
 
     List<Tag> findAllTags();
+
+    List<Tag> findTagsByName(List<String> tags);
 }

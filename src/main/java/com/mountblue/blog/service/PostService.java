@@ -30,4 +30,7 @@ public interface PostService {
 
     List<Post> getPostsByPage(int offset, int limit);
 
+    Page<Post> findAllPaged(Pageable pageable);
+
+    Page<Post> filterPosts(List<String> selectedAuthor, LocalDateTime startDate, LocalDateTime endDate, List<String> selectedTags, Pageable pageable);
 }

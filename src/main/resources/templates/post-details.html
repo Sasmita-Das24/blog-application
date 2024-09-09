@@ -12,9 +12,7 @@
         <p th:text="${post.excerpt}"></p>
         <p th:text="${post.author}"></p>
         <div class="post-actions">
-            <!-- Link to Edit the post -->
             <a th:href="@{'/posts/edit/' + ${post.id}}">Edit Post</a>
-            <!-- Link to Delete the post -->
             <a th:href="@{'/posts/delete/' + ${post.id}}" onclick="return confirm('Are you sure you want to delete this post?');">Delete Post</a>
         </div>
     </div>
@@ -49,7 +47,6 @@
                 <input type="hidden" name="id" th:value="${comment.id}"/>
                 <button type="submit" class="co">Update</button>
             </form>
-            <!--<a th:href="@{/comments/delete/{id}(id=${comment.id})}">Delete</a>-->
             <form method="post"
                   th:action="@{/comments/delete/{id}(id=${comment.id})}"  th:object="${comment}">
                 <input type="hidden" name="id" th:value="${comment.id}"/>

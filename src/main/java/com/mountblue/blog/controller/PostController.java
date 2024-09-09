@@ -11,27 +11,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class PostController {
     private final PostService postService;
     private final TagService tagService;
-
     private final PostRepository postRepository;
 
     @Autowired
@@ -39,12 +33,6 @@ public class PostController {
         this.postService = postService;
         this.tagService = tagService;
         this.postRepository = postRepository;
-    }
-
-    @GetMapping("/home")
-    public String home(Model model){
-        model.addAttribute("message","Hello thymeleaf");
-        return "home";
     }
 
     @GetMapping("/newpost")
@@ -72,14 +60,16 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public String getPosts( Model model){
-
+    public String getPosts(@RequestParam(value = "page", defaultValue = "0") int page,
+                           @RequestParam(value = "size", defaultValue = "10") int size,
+                           @RequestParam(value = "sort", defaultValue = "desc") String sortOrder, Model model){
+        Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
+        Page<Post> postPage = postService.findAllPaged(pageable);
         List<Post> posts = postService.findAll();
         List<Tag> allTags = tagService.findAllTags();
         List<String> allAuthors = postService.findAllAuthors();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        // Iterate through each post and format the publishedAt date
         for (Post post : posts) {
             if (post.getPublishedAt() != null) {
                 post.setFormattedDate(post.getPublishedAt().format(formatter));
@@ -88,13 +78,13 @@ public class PostController {
             }
         }
 
-        // Add the list of posts with formatted dates to the model
         model.addAttribute("posts", posts);
         model.addAttribute("allTags",allTags);
         model.addAttribute("allAuthors",allAuthors);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", postPage.getTotalPages());
+        model.addAttribute("sortOrder", sortOrder);
 
-
-        // Optionally, format the date for the first post and add it separately
         if (!posts.isEmpty()) {
             Post firstPost = posts.get(0);
             String formattedDate = firstPost.getPublishedAt() != null ?
@@ -105,24 +95,37 @@ public class PostController {
     }
 
     @GetMapping("/posts/sort")
-    public String getPosts(@RequestParam(defaultValue = "desc") String sortOrder, Model model) {
-        List<Post> posts = postService.findAllSortedByPublishedAt(sortOrder);
-
-        model.addAttribute("posts", posts);
+    public String getPosts(@RequestParam(value = "query", defaultValue="hahaha") String query,
+                           @RequestParam(value = "page", defaultValue = "0") int page,
+                           @RequestParam(value = "size", defaultValue = "10") int size,
+                           @RequestParam(value = "sort", defaultValue = "desc") String sortOrder,
+                           Model model) {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "publishedAt"));
+        Page<Post> postPage = postService.findAllPaged(pageable);
+        List<Post> posts = postPage.getContent();
         model.addAttribute("sortOrder", sortOrder);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", postPage.getTotalPages());
+        model.addAttribute("posts", posts);
 
         return "posts";
     }
 
     @GetMapping("/search")
-    public String searchPosts(@RequestParam("query") String query, @PageableDefault(size = 10) Pageable pageable,
+    public String searchPosts(@RequestParam("query") String query,
+                              @RequestParam(value = "page", defaultValue = "0") int page,
+                              @RequestParam(value = "size", defaultValue = "10") int size,
+                              @RequestParam(value = "sort", defaultValue = "desc") String sortOrder,
                                   Model model) {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "publishedAt"));
         Page<Post> posts = postService.searchPosts(query, pageable);
         model.addAttribute("posts", posts);
         model.addAttribute("query", query); // to preserve the search query in the view
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", posts.getTotalPages());
+        model.addAttribute("sortOrder", sortOrder);
         return "posts";
     }
-
 
     @GetMapping("/posts/{id}")
     public String getPostById(@PathVariable int id, Model model){
@@ -135,21 +138,22 @@ public class PostController {
 
     @GetMapping("/posts/filter")
     public String getFilteredPosts(
-            @RequestParam(required = false) String selectedAuthor,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "desc") String sortOrder,
+            @RequestParam(required = false) List<String> selectedAuthor,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam(required = false) List<String> selectedTags,
             Model model) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
+        Page<Post> postPage = postService.filterPosts(selectedAuthor, startDate, endDate, selectedTags, pageable);
 
-        // Fetch all tags and authors for the filter form
         List<Tag> allTags = tagService.findAllTags();
         List<String> allAuthors = postService.findAllAuthors();
+        Page<Post> filteredPaginatedPosts = postService.filterPosts(selectedAuthor, startDate, startDate, selectedTags, pageable);
+        List<Post> filteredPosts = filteredPaginatedPosts.getContent();
 
-        // Get filtered posts based on selected filters
-        // Convert tags list to a format that can be used in the service method if needed
-        List<Post> filteredPosts = postService.filterPosts(selectedAuthor, startDate, selectedTags);
-
-        // Add attributes to the model for rendering the view
         model.addAttribute("allTags", allTags);
         model.addAttribute("allAuthors", allAuthors);
         model.addAttribute("posts", filteredPosts);
@@ -157,11 +161,12 @@ public class PostController {
         model.addAttribute("selectedTags", selectedTags);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", postPage.getTotalPages());
+        model.addAttribute("sortOrder", sortOrder);
 
         return "posts";
     }
-
-
 
     @GetMapping("/posts/delete/{id}")
     public String deletePost(@PathVariable int id){
@@ -174,28 +179,27 @@ public class PostController {
         Post post = postService.findPostById(id);
         List<Tag> allTags = post.getTags();
         model.addAttribute("post", post);
-        model.addAttribute("allTags", allTags);
+        String tags = String.join(",", allTags.stream().map(tag -> tag.getName()).collect(Collectors.toList()));
+        model.addAttribute("tags", tags);
         return "edit-post";
     }
 
     @PostMapping("/posts/update")
-    public String updatePost(@ModelAttribute("post") Post post,@RequestParam(value = "tags", required = false) List<Integer> tagIds){
-       Post existingPost =  postService.findPostById(post.getId());
+    public String updatePost(@ModelAttribute("post") Post post,@RequestParam(value = "tagsList", required = false) String tagsString){
+        List<String> tags = Arrays.asList(tagsString.split(","));
+        Post existingPost =  postService.findPostById(post.getId());
 
         if (existingPost == null) {
-            // Handle case where post is not found, e.g., redirect with an error message
             return "redirect:/posts?error=PostNotFound";
         }
 
        existingPost.setTitle(post.getTitle());
        existingPost.setContent(post.getContent());
 
-        if (tagIds != null) {
-            // Fetch the selected tags from the database based on the tagIds from the form
-            List<Tag> selectedTags = tagService.findTagsByIds(tagIds);
+        if (tags != null) {
+            List<Tag> selectedTags = tagService.findTagsByName(tags);
             existingPost.setTags(selectedTags);
         } else {
-            // If no tags are selected, clear the tags
             existingPost.setTags(new ArrayList<>());
         }
 

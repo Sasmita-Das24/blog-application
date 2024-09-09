@@ -1,9 +1,7 @@
 package com.mountblue.blog.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -62,7 +60,6 @@ public class Tag {
         return name;
     }
 
-    /*methods to avoid issues when handling many-to-many relationships.*/
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,5 +72,4 @@ public class Tag {
     public int hashCode() {
         return Objects.hash(name);
     }
-
 }
