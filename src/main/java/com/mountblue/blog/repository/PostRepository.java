@@ -16,8 +16,6 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post,Integer>  {
     Post findPostById(int id);
 
-    List<Post> findByIsPublishedTrue(Sort sort);
-
     @Query("SELECT DISTINCT p.author FROM Post p")
     List<String> findDistinctAuthors();
 

@@ -49,7 +49,7 @@
     </style>
 </head>
 <body>
-    <h1>New Post/Edit post</h1>
+    <h1>New Post </h1>
     <form action="/posts" th:object="${post}" method="POST">
         <input type="hidden" th:field ="*{id}"><br><br>
         <input type="text" th:field="*{title}" placeholder="Title"><br><br>

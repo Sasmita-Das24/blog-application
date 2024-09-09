@@ -95,8 +95,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/sort")
-    public String getPosts(@RequestParam(value = "query", defaultValue="hahaha") String query,
-                           @RequestParam(value = "page", defaultValue = "0") int page,
+    public String getSortedPosts(@RequestParam(value = "page", defaultValue="0") int page,
                            @RequestParam(value = "size", defaultValue = "10") int size,
                            @RequestParam(value = "sort", defaultValue = "desc") String sortOrder,
                            Model model) {
@@ -147,7 +146,6 @@ public class PostController {
             @RequestParam(required = false) List<String> selectedTags,
             Model model) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
-        Page<Post> postPage = postService.filterPosts(selectedAuthor, startDate, endDate, selectedTags, pageable);
 
         List<Tag> allTags = tagService.findAllTags();
         List<String> allAuthors = postService.findAllAuthors();
@@ -162,7 +160,7 @@ public class PostController {
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", postPage.getTotalPages());
+        model.addAttribute("totalPages", filteredPaginatedPosts.getTotalPages());
         model.addAttribute("sortOrder", sortOrder);
 
         return "posts";
@@ -204,7 +202,6 @@ public class PostController {
         }
 
        postService.save(existingPost);
-
        return  "redirect:/posts";
     }
 }
