@@ -73,5 +73,4 @@ public interface PostRepository extends JpaRepository<Post,Integer>  {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
-
 }

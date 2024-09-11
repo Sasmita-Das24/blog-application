@@ -2,6 +2,8 @@ package com.mountblue.blog.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name="user")
 public class User {
@@ -9,14 +11,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  int id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false,unique = true)
     private  String email;
 
     @Column(nullable = false)
     private  String password;
+
+    @Column(name = "role")
+    private String role = "ROLE_AUTHOR" ;
+
 
     public User() {
     }
@@ -56,6 +62,22 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override

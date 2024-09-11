@@ -17,7 +17,7 @@ public class Post {
     private  String excerpt;
     @Column(columnDefinition = "TEXT")
     private  String content;
-    private  String author;
+    private String author;
     @Column(name="published_at")
     private  LocalDateTime  publishedAt;
     @Column(name="is_published")
@@ -144,17 +144,6 @@ public class Post {
 
     public void setFormattedDate(String formattedDate) {
         this.formattedDate = formattedDate;
-    }
-
-    public void setTagsFromString(String tagsString) {
-        String[] tagNames = tagsString.split("\\s*,\\s*");
-        List<Tag> tags = new ArrayList<>();
-        for (String tagName : tagNames) {
-            Tag tag = new Tag();
-            tag.setName(tagName);
-            tags.add(tag);
-        }
-        this.tags = tags;
     }
 
     @Override
