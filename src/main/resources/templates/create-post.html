@@ -54,7 +54,9 @@
         <input type="hidden" th:field ="*{id}"><br><br>
         <input type="text" th:field="*{title}" placeholder="Title"><br><br>
         <input type="text" th:field="*{excerpt}" placeholder="Excerpt"><br><br>
-        <input type="text" th:field="*{author}" placeholder="Author"><br><br>
+<!--
+        <input type="text" th:field="*{author}" th:disabled="${isAuthorDisabled ? 'disabled' : ''}" placeholder="Author"><br><br>
+-->
         <input type="text" name="tagList"  placeholder="Tags (comma separated)"> <br> <br>
         <textarea rows="15" th:field="*{content}"></textarea> <br><br>
         <input type="submit" value="Publish">

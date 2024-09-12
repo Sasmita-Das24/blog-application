@@ -3,6 +3,7 @@ package com.mountblue.blog.controller;
 import com.mountblue.blog.entity.Comment;
 import com.mountblue.blog.entity.Post;
 import com.mountblue.blog.entity.Tag;
+import com.mountblue.blog.entity.User;
 import com.mountblue.blog.repository.PostRepository;
 import com.mountblue.blog.service.PostService;
 import com.mountblue.blog.service.TagService;
@@ -12,9 +13,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,13 +43,30 @@ public class PostController {
     }
 
     @GetMapping("/newpost")
-    public String createPost(Model model){
-        model.addAttribute("post",new Post());
+   // @PreAuthorize("hasRole('AUTHOR') or hasRole('ADMIN')")
+    public String createPost(Model model, Principal principal){
+        Post post = new Post();
+        if (principal != null) {
+            String username = principal.getName();
+
+            if (SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                    .anyMatch(role -> role.getAuthority().equals("ROLE_AUTHOR"))) {
+                post.setAuthor(username);
+                model.addAttribute("isAuthorDisabled",  Boolean.TRUE);
+            } else {
+                model.addAttribute("isAuthorDisabled", Boolean.FALSE);
+            }
+        }
+
+        model.addAttribute("post",post);
         return "create-post";
     }
 
+   // @PreAuthorize("hasRole('AUTHOR') or hasRole('ADMIN')")
     @PostMapping("/posts")
     public  String savePost(@ModelAttribute("post") Post post, @RequestParam("tagList") String tagList){
+       Authentication  authentication =  SecurityContextHolder.getContext().getAuthentication();
+       String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         if (post.getTags() == null) {
             post.setTags(new ArrayList<>());
         }
@@ -54,6 +78,7 @@ public class PostController {
             tag.setName(tagName);
             tags.add(tag);
         }
+        post.setAuthor(username);
         post.setTags(tags);
         postService.save(post);
         return "redirect:/posts";
@@ -130,6 +155,7 @@ public class PostController {
     public String getPostById(@PathVariable int id, Model model){
       Post post = postService.findPostById(id);
       model.addAttribute("post",post);
+        System.out.println(post);
       Comment newComment = new Comment();
       model.addAttribute("newComment",newComment);
       return "post-details";

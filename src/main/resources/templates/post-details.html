@@ -86,8 +86,8 @@
         <label>Excerpt : </label>
         <p th:text="${post.excerpt}"></p> <br>
         <label>Author : </label>
-        <p th:text="${post.author}"></p> <br>
-        <div sec:authorize="hasAnyRole('AUTHOR','ADMIN')" class="post-actions">
+        <p th:text="${post.author}"   ></p> <br>
+        <div sec:authorize="(hasRole('AUTHOR') and #vars.post.author != null and #authentication.principal.username.toLowerCase() == #vars.post.author.toLowerCase()) or hasRole('ADMIN')" class="post-actions">
             <a th:href="@{'/posts/edit/' + ${post.id}}">Edit Post</a>
             <a th:href="@{'/posts/delete/' + ${post.id}}" onclick="return confirm('Are you sure you want to delete this post?');">Delete Post</a>
         </div>

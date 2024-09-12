@@ -34,7 +34,6 @@ public class UserServiceImpl implements   UserService{
         return true;
     }
 
-
     @Bean
     public PasswordEncoder passwordEncoder(){
         return NoOpPasswordEncoder.getInstance();

@@ -146,7 +146,7 @@ public class Post {
         this.formattedDate = formattedDate;
     }
 
-    @Override
+   /* @Override
     public String toString() {
         return "Post{" +
                 "id=" + id +
@@ -159,7 +159,7 @@ public class Post {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", comments=" + comments +
-                ", tags=" + tags.stream().map(Tag::getName).collect(Collectors.joining(", ")) +
+               // ", tags=" + tags.stream().map(Tag::getName).collect(Collectors.joining(", ")) +
                 '}';
-    }
+    }*/
 }

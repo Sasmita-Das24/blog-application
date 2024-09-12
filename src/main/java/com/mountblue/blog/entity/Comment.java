@@ -89,7 +89,7 @@ public class Comment {
     }
 
 
-    @Override
+   /* @Override
     public String toString() {
         return "Comment{" +
                 "id=" + id +
@@ -100,6 +100,6 @@ public class Comment {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
-    }
+    }*/
 }
 
