@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title th:text="${post.title}">Post Details</title>
@@ -87,7 +87,7 @@
         <p th:text="${post.excerpt}"></p> <br>
         <label>Author : </label>
         <p th:text="${post.author}"></p> <br>
-        <div class="post-actions">
+        <div sec:authorize="hasAnyRole('AUTHOR','ADMIN')" class="post-actions">
             <a th:href="@{'/posts/edit/' + ${post.id}}">Edit Post</a>
             <a th:href="@{'/posts/delete/' + ${post.id}}" onclick="return confirm('Are you sure you want to delete this post?');">Delete Post</a>
         </div>

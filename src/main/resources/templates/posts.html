@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>My blog application</title>
@@ -198,11 +198,17 @@
 </head>
 <body>
     <h1>My blog application</h1>
-    <div class="centered-link">
+    <div sec:authorize="hasAnyRole('AUTHOR','ADMIN')" class="centered-link">
       <button>
         <a th:href="@{/newpost}">Create New Post</a>
       </button><br>
+        <div>
+            <form action="#" th:action="@{/logout}" method="POST">
+                <input type="submit" value="Logout" />
+            </form>
+        </div>
     </div>
+
     <div  class="main-container">
         <div class="filter-container">
             <form action="/posts/filter" method="get">
@@ -256,7 +262,7 @@
         </div>
 
         <div class="search-form">
-            <form action="/search" method="get">
+            <form action="/posts/search" method="get">
                 <label for="search-criteria">Search here:</label>
                 <input id="search-criteria" type="text" name="query" placeholder="Search by title, content, author, or tags" required>
                 <button type="submit">Search</button>

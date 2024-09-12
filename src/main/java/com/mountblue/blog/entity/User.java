@@ -23,7 +23,6 @@ public class User {
     @Column(name = "role")
     private String role = "ROLE_AUTHOR" ;
 
-
     public User() {
     }
 
