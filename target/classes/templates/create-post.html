@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #000;
+        }
+        form {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+        }
+        input[type="submit"] {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>New Post </h1>
+    <form action="/posts" th:object="${post}" method="POST">
+        <input type="hidden" th:field ="*{id}"><br><br>
+        <input type="text" th:field="*{title}" placeholder="Title"><br><br>
+        <input type="text" th:field="*{excerpt}" placeholder="Excerpt"><br><br>
+<!--
+        <input type="text" th:field="*{author}" th:disabled="${isAuthorDisabled ? 'disabled' : ''}" placeholder="Author"><br><br>
+-->
+        <input type="text" name="tagList"  placeholder="Tags (comma separated)"> <br> <br>
+        <textarea rows="15" th:field="*{content}"></textarea> <br><br>
+        <input type="submit" value="Publish">
+    </form>
+</body>
+</html>

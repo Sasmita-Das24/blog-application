@@ -26,12 +26,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(configurer ->
                         configurer
                                 // Allow everyone to access these URLs
-                                .requestMatchers("/login", "/register", "/posts").permitAll()
+                                .requestMatchers("/**").permitAll()
 
-                                // Allow only authenticated users with roles ADMIN or AUTHOR to create posts
-                                .requestMatchers(HttpMethod.POST, "/posts").hasAnyRole("ADMIN", "AUTHOR")
-                                .requestMatchers("/posts/**").hasAnyRole("ADMIN", "AUTHOR")
-                                .requestMatchers(HttpMethod.GET, "/create-post","/newpost").hasAnyRole("ADMIN", "AUTHOR")
+//                                .requestMatchers("/login", "/register", "/posts").permitAll()
+//
+//                                // Allow only authenticated users with roles ADMIN or AUTHOR to create posts
+//                                .requestMatchers(HttpMethod.POST, "/posts").hasAnyRole("ADMIN", "AUTHOR")
+//                                .requestMatchers("/posts/**").hasAnyRole("ADMIN", "AUTHOR")
+//                                .requestMatchers(HttpMethod.GET, "/create-post","/newpost").hasAnyRole("ADMIN", "AUTHOR")
 
                                 // Any other requests need to be authenticated
                                 .anyRequest().authenticated()

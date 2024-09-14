@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>My blog application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, h2 {
+            color: #000;
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin : 5px;
+        }
+
+        .second-main-container{
+            margin :10px;
+        }
+
+        .filter-container {
+            width: 30%;
+        }
+
+        .filter-form {
+            margin-bottom: 20px;
+            background-color: #fff;
+            border: 1px solid #000;
+            border-radius: 5px;
+            padding: 15px;
+        }
+
+        .filter-form label {
+            display: block;
+            margin-bottom: 5px;
+            color: #000;
+        }
+
+        .filter-form input[type="text"],
+        .filter-form input[type="date"],
+        .filter-form input[type="datetime-local"],
+        .filter-form select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            background-color: #fff;
+            color: #000;
+        }
+
+        .filter-form button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .filter-form button:hover {
+            background-color: #333;
+        }
+
+        .content-container {
+            width: 65%;
+        }
+
+        .search-sort-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            margin-top :20px;
+        }
+
+        .search-sort-container form {
+            margin-left: 10px;
+        }
+
+        .sort-form select,
+        .search-form input {
+            padding: 10px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #000;
+        }
+
+        .sort-form button,
+        .search-form button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .sort-form button:hover,
+        .search-form button:hover {
+            background-color: #333;
+        }
+
+        .post-container {
+            border: 1px solid #000;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .post-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #000;
+        }
+
+        .post-title a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .post-title a:hover {
+            text-decoration: underline;
+        }
+
+        .post-content {
+            font-size: 16px;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination form {
+            display: inline;
+            margin-right: 10px;
+        }
+
+        .pagination button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .pagination button:hover {
+            background-color: #333;
+        }
+
+        .centered-link{
+            background-color : black;
+            color : white;
+        }
+
+        .sort-form, .search-form{
+             width:50%;
+        }
+
+        .tagelement{
+            display : flex;
+        }
+
+        .second-main-container{
+            width:100%;
+            justify : end;
+            position : relative ;
+        }
+
+        .author-container{
+            display : flex;
+        }
+    </style>
+</head>
+<body>
+    <h1>My blog application</h1>
+    <div sec:authorize="hasAnyRole('AUTHOR','ADMIN')" class="centered-link">
+      <button>
+        <a th:href="@{/newpost}">Create New Post</a>
+      </button><br>
+        <div>
+            <form action="#" th:action="@{/logout}" method="POST">
+                <input type="submit" value="Logout" />
+            </form>
+        </div>
+    </div>
+
+    <div  class="main-container">
+        <div class="filter-container">
+            <form action="/posts/filter" method="get">
+                <div class="filter-form">
+                    <label for="tags">Filter by Tags:</label>
+                    <div id="tags" class="tags-container">
+                        <div class="tagelement" th:each="tag : ${allTags}">
+                            <input type="checkbox" name="selectedTags" th:value="${tag.name}"
+                                   th:checked="${selectedTags != null && selectedTags.contains(tag.name)}">
+                            <label th:text="${tag.name}"></label><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-form">
+                    <label>Filter by Author:</label>
+                    <div>
+                        <div class="author-container" th:each="author : ${allAuthors}">
+                            <input type="checkbox" name="selectedAuthor" th:value="${author}"
+                                   th:checked="${selectedAuthor != null && selectedAuthor.equals(author)}">
+                            <label th:text="${author}"></label><br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-form">
+                    <label for="startDate">Start Date:</label>
+                    <input type="datetime-local" name="startDate" th:value="${startDate}" id="startDate">
+                </div>
+
+                <div class="filter-form">
+                    <label for="endDate">End Date:</label>
+                    <input type="datetime-local" name="endDate" th:value="${endDate}" id="endDate">
+                </div>
+
+                <div class="filter-form">
+                    <button type="submit">Apply Filter</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="second-main-container">
+        <div class="sort-form">
+            <form action="/posts/sort" method="get">
+                <label for="sortOrder">Sort by Published Date:</label>
+                <select name="sortOrder" id="sortOrder">
+                    <option value="desc" th:selected="${sortOrder == 'desc'}">Newest First</option>
+                    <option value="asc" th:selected="${sortOrder == 'asc'}">Oldest First</option>
+                </select>
+                <button type="submit">Sort</button>
+            </form><br>
+        </div>
+
+        <div class="search-form">
+            <form action="/posts/search" method="get">
+                <label for="search-criteria">Search here:</label>
+                <input id="search-criteria" type="text" name="query" placeholder="Search by title, content, author, or tags" required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+            <h1>All Posts</h1>
+            <div th:each="post : ${posts}" class="post-container">
+                <h2>
+                    <a th:href="@{'/posts/' + ${post.id}}" th:text="${post.title}" class="post-title"></a>
+                </h2>
+                <p th:text="${post.formattedDate}"></p>
+                <!--<p th:text="${post.publishedAt}" class="post-content"></p>-->
+                <p th:text="${post.excerpt}" class="post-content"></p>
+                <p th:text="${post.content}" class="post-content"></p>
+                <p th:text="${post.author}" class="post-content"></p>
+                <p th:text="${post.tags}" class="post-content"></p>
+            </div>
+
+
+        <div class="pagination">
+            <div class="pagination-controls">
+                <form action="/posts/filter" method="get" th:if="${currentPage > 0}">
+                    <input type="hidden" name="page" th:value="${currentPage - 1}"/>
+                    <input type="hidden" name="size" value="10"/>
+                    <input type="hidden" name="sort" th:value="${sortOrder}"/>
+                    <input type="hidden" name="selectedAuthor" th:value="${selectedAuthor}"/>
+                    <input type="hidden" name="startDate" th:value="${startDate}"/>
+                    <input type="hidden" name="endDate" th:value="${endDate}"/>
+                    <input type="hidden" th:each="tag : ${selectedTags}" name="selectedTags" th:value="${tag}"/>
+                    <button type="submit"><span th:text="${currentPage != null && currentPage > 0 ? 'Previous' : '0'}"></span></button>
+                </form>
+                <form action="/posts/filter" method="get" th:if="${currentPage < totalPages - 1}">
+                    <input type="hidden" name="page" th:value="${currentPage + 1}"/>
+                    <input type="hidden" name="size" value="10"/>
+                    <input type="hidden" name="sort" th:value="${sortOrder}"/>
+                    <input type="hidden" name="selectedAuthor" th:value="${selectedAuthor}"/>
+                    <input type="hidden" name="startDate" th:value="${startDate}"/>
+                    <input type="hidden" name="endDate" th:value="${endDate}"/>
+                    <input type="hidden" th:each="tag : ${selectedTags}" name="selectedTags" th:value="${tag}"/>
+                    <button type="submit">Next</button>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+</body>
+</html>
