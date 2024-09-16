@@ -21,7 +21,7 @@ public class Post {
     @Column(name="published_at")
     private  LocalDateTime  publishedAt;
     @Column(name="is_published")
-    private  LocalDateTime  isPublished;
+    private  Boolean  isPublished;
     @Column(name="created_at")
     private  LocalDateTime  createdAt;
     @Column(name="updated_at")
@@ -37,6 +37,17 @@ public class Post {
             joinColumns =  @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags = new ArrayList<>();
+
+    public List<String> getTagsList() {
+        return tagsList;
+    }
+
+    public void setTagsList(List<String> tagsList) {
+        this.tagsList = tagsList;
+    }
+
+    @Transient
+private List<String> tagsList = new ArrayList<>();
 
     @PrePersist
     public void prePersist(){
@@ -98,11 +109,11 @@ public class Post {
         this.publishedAt = publishedAt;
     }
 
-    public LocalDateTime getIsPublished() {
+    public Boolean getIsPublished() {
         return isPublished;
     }
 
-    public void setIsPublished(LocalDateTime isPublished) {
+    public void setIsPublished(Boolean isPublished) {
         this.isPublished = isPublished;
     }
 

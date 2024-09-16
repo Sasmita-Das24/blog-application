@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Sort;
 
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-@RepositoryRestResource(path="postss")
 public interface PostRepository extends JpaRepository<Post,Integer>  {
     Post findPostById(int id);
 
@@ -75,4 +73,6 @@ public interface PostRepository extends JpaRepository<Post,Integer>  {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
+
+    Page<Post> findByTitleContainingOrContentContaining(String keyword, String keyword1, Pageable pageable);
 }

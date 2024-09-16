@@ -49,7 +49,7 @@ public class CommentController {
         Post post = comment.getPost();
 
         if (comment != null && post != null) {
-            model.addAttribute("comment", comment);
+            model.addAttribute("commentName", comment);
             model.addAttribute("post", post);
             return "edit-comment";
         }
@@ -57,30 +57,30 @@ public class CommentController {
     }
 
     @PostMapping("/edit/{id}")
-    public String updateComment(@PathVariable("id") Integer id, @ModelAttribute("comment") Comment comment) {
+    public String updateComment(@PathVariable("id") Integer id, @ModelAttribute("commentName") Comment comment) {
         commentService.update(id, comment);
         return "redirect:/posts";
     }
 
     @PostMapping("/updateComment/{postId}/{commentId}")
-    public String updateComment(@PathVariable("postId") int postId,@PathVariable("commentId") int commentId, Model model){
+    public String updateComment(@PathVariable("postId") int postId,@PathVariable("commentId") int commentId, @ModelAttribute("existingComment") Comment updatedComment, Model model){
         Post post = postService.findPostById(postId);
-        Set<Comment> comments = post.getComments();
-
         Comment existingComment = commentService.getCommentById(commentId);
 
-        if(existingComment != null){
-            String theComment = existingComment.getComment();
-            model.addAttribute("post",post);
-            model.addAttribute("commentId", commentId);
-            model.addAttribute("comments",comments);
-            model.addAttribute("theComment",theComment);
-            model.addAttribute("existingComment",existingComment);
+        // Check if the comment exists
+        if (existingComment != null) {
+            // Update the existing comment with the new values from the form
+            existingComment.setName(updatedComment.getName());
+            existingComment.setEmail(updatedComment.getEmail());
+            existingComment.setComment(updatedComment.getComment());
+
+            // Save the updated comment
             commentService.saveComment(existingComment);
-            return "post-details";
-        }
-        else{
-            return "error";
+
+            // Redirect to the post details page after saving
+            return "redirect:/posts/" + postId;
+        } else {
+            return "error"; // Handle if comment does not exist
         }
     }
 

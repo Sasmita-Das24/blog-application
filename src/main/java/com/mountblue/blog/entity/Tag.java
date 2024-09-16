@@ -20,6 +20,10 @@ public class Tag {
     public Tag() {
     }
 
+    public Tag(String name) {
+        this.name = name;
+    }
+
     public Tag(int id, String name, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Post> post) {
         this.id = id;
         this.name = name;

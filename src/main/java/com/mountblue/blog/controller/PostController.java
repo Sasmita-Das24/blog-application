@@ -3,7 +3,6 @@ package com.mountblue.blog.controller;
 import com.mountblue.blog.entity.Comment;
 import com.mountblue.blog.entity.Post;
 import com.mountblue.blog.entity.Tag;
-import com.mountblue.blog.entity.User;
 import com.mountblue.blog.repository.PostRepository;
 import com.mountblue.blog.service.PostService;
 import com.mountblue.blog.service.TagService;

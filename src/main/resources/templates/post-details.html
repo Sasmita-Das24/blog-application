@@ -116,18 +116,20 @@
         <li th:each="comment :${post.getComments()}">
             <p th:text="${comment.name}">Comment Name</p>
             <p th:text="${comment.comment}">Comment Content</p>
-           <a th:href="@{/comments/edit/{id}(id=${comment.id})}">Edit Comment</a>
-           <!-- <form  method="post"
-                   th:action="@{'/comments/updateComment/'+ ${post.id} + '/' + ${comment.id}}"
-                   th:object="${comment}">
-                <input type="hidden" name="id" th:value="${comment.id}"/>
-                <button type="submit" class="co">Update</button>
-            </form>-->
-            <form method="post"
-                  th:action="@{/comments/delete/{id}(id=${comment.id})}"  th:object="${comment}">
-                <input type="hidden" name="id" th:value="${comment.id}"/>
-                <button type="submit" class="co">Delete</button>
-            </form>
+          <div sec:authorize="(hasRole('AUTHOR') and #vars.comment.name != null and #authentication.principal.username.toLowerCase() == #vars.comment.name.toLowerCase()) or hasRole('ADMIN')">
+              <a th:href="@{/comments/edit/{id}(id=${comment.id})}">Edit Comment</a>
+              <!-- <form  method="post"
+                      th:action="@{'/comments/updateComment/'+ ${post.id} + '/' + ${comment.id}}"
+                      th:object="${comment}">
+                   <input type="hidden" name="id" th:value="${comment.id}"/>
+                   <button type="submit" class="co">Update</button>
+               </form>-->
+              <form method="post"
+                    th:action="@{/comments/delete/{id}(id=${comment.id})}"  th:object="${comment}">
+                  <input type="hidden" name="id" th:value="${comment.id}"/>
+                  <button type="submit" class="co">Delete</button>
+              </form>
+          </div>
         </li>
     </ul>
 </body>

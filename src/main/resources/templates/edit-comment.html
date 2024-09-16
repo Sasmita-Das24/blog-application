@@ -43,7 +43,7 @@
 </head>
 <body>
 <h2>Edit Comment</h2>
-<form  th:action="@{'/comments/updateComment/' + ${post.id} + '/' + ${comment.id}}" method="post" th:object="${comment}">
+<form  th:action="@{'/comments/updateComment/' + ${post.id} + '/' + ${commentName.id}}" method="post" th:object="${commentName}">
     <input type="hidden" th:field="*{id}" />
 
     <label>Name:</label>

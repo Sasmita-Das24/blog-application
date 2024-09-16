@@ -25,24 +25,20 @@ public class SecurityConfig {
         httpSecurity
                 .authorizeHttpRequests(configurer ->
                         configurer
-                                // Allow everyone to access these URLs
-                                .requestMatchers("/**").permitAll()
+                                // Allow everyone to access these URLs  .requestMatchers("/**").permitAll()
 
-//                                .requestMatchers("/login", "/register", "/posts").permitAll()
-//
-//                                // Allow only authenticated users with roles ADMIN or AUTHOR to create posts
-//                                .requestMatchers(HttpMethod.POST, "/posts").hasAnyRole("ADMIN", "AUTHOR")
-//                                .requestMatchers("/posts/**").hasAnyRole("ADMIN", "AUTHOR")
-//                                .requestMatchers(HttpMethod.GET, "/create-post","/newpost").hasAnyRole("ADMIN", "AUTHOR")
-
-                                // Any other requests need to be authenticated
-                                .anyRequest().authenticated()
+                               .requestMatchers("/login", "/register", "/postss").permitAll()
+                               .requestMatchers(HttpMethod.POST, "/postss").hasAnyRole("ADMIN", "AUTHOR")
+                               .requestMatchers("/postss/**").hasAnyRole("ADMIN", "AUTHOR")
+                               .requestMatchers(HttpMethod.GET, "/create-post","/newpost")
+                                .hasAnyRole("ADMIN", "AUTHOR").anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())
                 .formLogin(form ->
-                        form.loginPage("/login")
+                        form
+                                //.loginPage("/login")
                                 .loginProcessingUrl("/authenticateTheUser")
-                                .defaultSuccessUrl("/posts", true)  // Redirect to posts after successful login
+                                .defaultSuccessUrl("/postss", true)  // Redirect to posts after successful login
                                 .permitAll()
                 )
                 .logout(logout -> logout.permitAll());
